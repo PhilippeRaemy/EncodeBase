@@ -10,7 +10,7 @@
         public static string EncodeBase(this string s, string code)
       => new string(Encoding.Default.GetBytes(s).EncodeBase(code).ToArray());
 
-        static int CheckCodeString(string code)
+        public static int CheckCodeString(string code)
         {
             if (code == null) throw new ArgumentNullException(nameof(code));
             if (code.Length < 2)
@@ -19,8 +19,13 @@
             if (code.Any(c => code.Count(co => co == c) > 1))
                 throw new InvalidOperationException("Please use a coding string with all distinct characters");
             var len = 2;
-            while (len < code.Length) len *= 2;
-            return len / 2;
+            var bits = 1;
+            while (len < code.Length)
+            {
+                len *= 2;
+                bits += 1;
+            }
+            return bits;
         }
 
         public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code)
