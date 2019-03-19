@@ -24,18 +24,16 @@
                 new KeyValuePair<char,string>('1', "I"),
                 new KeyValuePair<char,string>('V', "U"),
             };
-            var clean = Base32;
-            var corrupt = aliases.Aggregate(clean, (s, kvp) => s.Replace(kvp.Key.ToString(), kvp.Value));
-            Assert.Equal(clean.DecodeBase32(), corrupt.DecodeBase32(aliases));
+            var corrupt = aliases.Aggregate(Base32, (s, kvp) => s.Replace(kvp.Key.ToString(), kvp.Value));
+            Assert.Equal(Base32.DecodeBase32(), corrupt.DecodeBase32(aliases));
         }
 
         [Fact]
         public void Separators()
         {
-            var clean = Base32;
-            var separators = "-";
-            var separated = clean.Batch(5).Select(b => new string(b.ToArray())).ToDelimitedString(separators);
-            Assert.Equal(clean.DecodeBase32(), separated.DecodeBase32(separators: separators));
+            const string separators = "-";
+            var separated = Base32.Batch(5).Select(b => new string(b.ToArray())).ToDelimitedString(separators);
+            Assert.Equal(Base32.DecodeBase32(), separated.DecodeBase32(separators: separators));
         }
     }
 }
