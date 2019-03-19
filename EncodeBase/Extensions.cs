@@ -61,20 +61,20 @@
         public static string DecodeBase(this string s, string code)
             => new string(s.ToCharArray().DecodeBase(code).Select(b => (char)b).ToArray());
 
-        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, NameValueCollection aliases = null)
+        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, NameValueCollection aliases = null, string separators = null)
         {
             var level = 0;
             uint work = 0;
             var encodingBits = CheckCodeString(code);
             var dic = code.Select((c, i) => new {c, b = (byte)i})
-                         .ToDictionary(p => p.c, p => p.b);
+                          .ToDictionary(p => p.c, p => p.b);
 
             if (aliases!= null)
                 foreach (string key in aliases.Keys)
                     foreach (var alias in aliases[key])
                         dic.Add(alias, dic[alias]);
 
-            foreach (var c in chars)
+            foreach (var c in chars.Where(c => (separators?.IndexOf(c) ?? -1) < 0))
             {
                 var b5 = dic[c];
                 work = (work << encodingBits) | b5;
