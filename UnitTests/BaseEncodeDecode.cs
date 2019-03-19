@@ -18,7 +18,7 @@ namespace UnitTests
 
         static readonly byte[] Bytes = Enumerable.Range(0, 255).Select(b => (byte)b).ToArray();
 
-        static readonly int[] Prefixes = Enumerable.Range(0, 8).ToArray();
+        static readonly int[] Prefixes = Enumerable.Range(0, 5).ToArray();
 
         public static IEnumerable<object[]> Cases =>
             from c in Codes
@@ -31,7 +31,7 @@ namespace UnitTests
         public void EncodeDecode(string code, byte b, int prefix)
         {
             var bytes = Bytes.Take(prefix).Append(b).ToArray();
-            Assert.Equal(bytes, bytes.EncodeBase(code).ToArray().DecodeBase(code).ToArray());
+            Assert.Equal(bytes, bytes.EncodeBase(code).DecodeBase(code).ToArray());
         }
 
     }
