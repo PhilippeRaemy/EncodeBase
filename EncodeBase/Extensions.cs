@@ -65,9 +65,11 @@
             var level = 0;
             uint work = 0;
             var encodingBits = CheckCodeString(code);
+            var dic = code.Select((c, i) => new {c, b = (byte)i})
+                         .ToDictionary(p => p.c, p => p.b);
             foreach (var c in chars)
             {
-                var b5 = (byte)code.IndexOf(c);
+                var b5 = dic[c];
                 work = (work << encodingBits) | b5;
                 level += encodingBits;
                 while (level >= 8)
