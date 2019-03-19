@@ -45,7 +45,7 @@
                 yield return code[(int)((work << (encodingBits - level)) & mask)];
         }
 
-        static int GetMask(int encodingBits)
+        public static int GetMask(int encodingBits)
         {
             var m = 1;
             while (encodingBits-- > 0) m *= 2;
@@ -63,7 +63,7 @@
             foreach (var c in chars)
             {
                 var b5 = (byte)code.IndexOf(c);
-                work = (uint)((work << encodingBits) | b5);
+                work = (work << encodingBits) | b5;
                 level += encodingBits;
                 while (level >= 8)
                 {
