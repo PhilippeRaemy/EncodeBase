@@ -8,9 +8,6 @@
 
     public static class Extensions
     {
-        public static string EncodeBase(this string s, Encoding encoding, string code)
-      => new string(encoding.GetBytes(s).EncodeBase(code).ToArray());
-
         public static int CheckCodeString(string code)
         {
             if (code == null) throw new ArgumentNullException(nameof(code));
@@ -58,12 +55,6 @@
             return m - 1;
         }
 
-        public static string DecodeBase(this string s, string code, Encoding encoding)
-            => encoding.GetString(s.DecodeBase(code).ToArray());
-
-        public static IEnumerable<byte> DecodeBase(this string s, string code, NameValueCollection aliases = null, string separators = null) 
-            => s.ToCharArray().DecodeBase(code, aliases, separators);
-
         public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, NameValueCollection aliases = null, string separators = null)
         {
             var level = 0;
@@ -90,5 +81,16 @@
                 }
             }
         }
+
+        public static string EncodeBase(this string s, Encoding encoding, string code)
+            => new string(encoding.GetBytes(s).EncodeBase(code).ToArray());
+
+        public static string DecodeBase(this string s, string code, Encoding encoding)
+            => encoding.GetString(s.DecodeBase(code).ToArray());
+
+        public static IEnumerable<byte> DecodeBase(this string s, string code, NameValueCollection aliases = null, string separators = null)
+            => s.ToCharArray().DecodeBase(code, aliases, separators);
+
+
     }
 }
