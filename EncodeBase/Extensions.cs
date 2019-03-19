@@ -5,6 +5,7 @@
     using System.Collections.Specialized;
     using System.Linq;
     using System.Text;
+    using static CodingStrings;
 
     public static class Extensions
     {
@@ -85,12 +86,40 @@
         public static string EncodeBase(this string s, Encoding encoding, string code)
             => new string(encoding.GetBytes(s).EncodeBase(code).ToArray());
 
-        public static string DecodeBase(this string s, string code, Encoding encoding)
-            => encoding.GetString(s.DecodeBase(code).ToArray());
+        public static string DecodeBase(this string s, string code, Encoding encoding, NameValueCollection aliases = null, string separators = null)
+            => encoding.GetString(s.DecodeBase(code, aliases, separators).ToArray());
 
         public static IEnumerable<byte> DecodeBase(this string s, string code, NameValueCollection aliases = null, string separators = null)
             => s.ToCharArray().DecodeBase(code, aliases, separators);
 
+        public static string EncodeBase2 (this string s, Encoding encoding) => s.EncodeBase(encoding, Base2 );
+        public static string EncodeBase4 (this string s, Encoding encoding) => s.EncodeBase(encoding, Base4 );
+        public static string EncodeBase8 (this string s, Encoding encoding) => s.EncodeBase(encoding, Base8 ); 
+        public static string EncodeBase16(this string s, Encoding encoding) => s.EncodeBase(encoding, Base16); 
+        public static string EncodeBase32(this string s, Encoding encoding) => s.EncodeBase(encoding, Base32);
 
+        public static IEnumerable<char> EncodeBase2 (this IEnumerable<byte> bytes) => bytes.EncodeBase(Base2 );
+        public static IEnumerable<char> EncodeBase4 (this IEnumerable<byte> bytes) => bytes.EncodeBase(Base4 );
+        public static IEnumerable<char> EncodeBase8 (this IEnumerable<byte> bytes) => bytes.EncodeBase(Base8 );
+        public static IEnumerable<char> EncodeBase16(this IEnumerable<byte> bytes) => bytes.EncodeBase(Base16);
+        public static IEnumerable<char> EncodeBase32(this IEnumerable<byte> bytes) => bytes.EncodeBase(Base32);
+
+        public static string DecodeBase2 (this string s, Encoding encoding, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base2 , encoding, aliases, separators);
+        public static string DecodeBase4 (this string s, Encoding encoding, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base4 , encoding, aliases, separators);
+        public static string DecodeBase8 (this string s, Encoding encoding, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base8 , encoding, aliases, separators);
+        public static string DecodeBase16(this string s, Encoding encoding, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base16, encoding, aliases, separators);
+        public static string DecodeBase32(this string s, Encoding encoding, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base32, encoding, aliases, separators);
+
+        public static IEnumerable<byte> DecodeBase2 (this string s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base2 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase4 (this string s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base4 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase8 (this string s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base8 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase16(this string s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
+        public static IEnumerable<byte> DecodeBase32(this string s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
+
+        public static IEnumerable<byte> DecodeBase2 (this IEnumerable<char>s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base2 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase4 (this IEnumerable<char>s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base4 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase8 (this IEnumerable<char>s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base8 , aliases, separators);
+        public static IEnumerable<byte> DecodeBase16(this IEnumerable<char>s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
+        public static IEnumerable<byte> DecodeBase32(this IEnumerable<char>s, string code, NameValueCollection aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
     }
 }
