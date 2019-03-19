@@ -5,16 +5,11 @@ namespace UnitTests
     using System.Linq;
     using Xunit;
     using EncodeBase;
+    using static EncodeBase.CodingStrings;
 
     public class BaseEncodeDecode
     {
-        static readonly string [] Codes = {
-            "01", 
-            "0123",
-            "01234567",
-            "0123456789abcdef",
-            "0123456789abcdefghijklmnopqrstuv",
-        };
+        static readonly string [] Codes = { Base2, Base4, Base8, Base16, Base32};
 
         static readonly byte[] Bytes = Enumerable.Range(0, 255).Select(b => (byte)b).ToArray();
 
