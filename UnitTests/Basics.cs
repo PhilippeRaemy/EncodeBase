@@ -10,7 +10,7 @@
     public class Basics
     {
         [Fact]
-        public void CaseOxFF()
+        public void CaseOxff()
         {
             Assert.Equal("ZW", new string(new byte[] { 255 }.EncodeBase(Base32).ToArray()));
         }
