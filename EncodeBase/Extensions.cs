@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Linq;
     using System.Text;
 
@@ -60,13 +61,19 @@
         public static string DecodeBase(this string s, string code)
             => new string(s.ToCharArray().DecodeBase(code).Select(b => (char)b).ToArray());
 
-        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code)
+        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, NameValueCollection aliases = null)
         {
             var level = 0;
             uint work = 0;
             var encodingBits = CheckCodeString(code);
             var dic = code.Select((c, i) => new {c, b = (byte)i})
                          .ToDictionary(p => p.c, p => p.b);
+
+            if (aliases!= null)
+                foreach (string key in aliases.Keys)
+                    foreach (var alias in aliases[key])
+                        dic.Add(alias, dic[alias]);
+
             foreach (var c in chars)
             {
                 var b5 = dic[c];
