@@ -2,7 +2,7 @@ namespace UnitTests
 {
     using Xunit;
 
-    public class Basics
+    public class GetMasks
     {
         public static TheoryData<int, int> Masks =>
             new TheoryData<int, int>
@@ -19,7 +19,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(Masks))]
-        public void GetMask(int encodingBits, int expectedMask )
+        public void GetMask(int encodingBits, int expectedMask)
         {
             Assert.Equal(expectedMask, EncodeBase.Extensions.GetMask(encodingBits));
         }
