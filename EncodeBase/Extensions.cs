@@ -60,7 +60,7 @@
         public static string DecodeBase(this string s, string code)
             => new string(s.ToCharArray().DecodeBase(code).Select(b => (char)b).ToArray());
 
-        public static IEnumerable<byte> DecodeBase(this char[] chars, string code)
+        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code)
         {
             var level = 0;
             uint work = 0;
