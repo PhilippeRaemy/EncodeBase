@@ -18,8 +18,9 @@
 
             if (code.Any(c => code.Count(co => co == c) > 1))
                 throw new InvalidOperationException("Please use a coding string with all distinct characters");
-
-            return (int)Math.Log(code.Length, 2);
+            var len = 2;
+            while (len < code.Length) len *= 2;
+            return len / 2;
         }
 
         public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code)
@@ -27,11 +28,12 @@
             var level = 0;
             uint work = 0;
             var encodingBits = CheckCodeString(code);
-            var mask = (int)Math.Pow(2, encodingBits) - 1;
+
+            var mask = GetMask(encodingBits);
 
             foreach (var b in bytes)
             {
-                work = (uint)(((work & 0xff) << 8) | b);
+                work = ((work & 0xff) << 8) | b;
                 level += 8;
                 while (level >= encodingBits)
                 {
@@ -41,6 +43,13 @@
             }
             if (level > 0)
                 yield return code[(int)((work << (encodingBits - level)) & mask)];
+        }
+
+        static int GetMask(int encodingBits)
+        {
+            var m = 1;
+            while (encodingBits-- > 0) m *= 2;
+            return m - 1;
         }
 
         public static string DecodeBase(this string s, string code)
