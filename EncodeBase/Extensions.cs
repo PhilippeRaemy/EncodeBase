@@ -30,7 +30,7 @@
         public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code) => 
             bytes.EncodeBase(CheckCodeString(code), i => code[i]);
 
-        public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, int encodingBits, Func<int, char> coder)
+        public static IEnumerable<T> EncodeBase<T>(this IEnumerable<byte> bytes, int encodingBits, Func<int, T> coder)
         {
             var level = 0;
             uint work = 0;
@@ -114,6 +114,7 @@
         public static IEnumerable<char> EncodeBase16(this IEnumerable<byte> bytes) => bytes.EncodeBase(Base16);
         public static IEnumerable<char> EncodeBase32(this IEnumerable<byte> bytes) => bytes.EncodeBase(Base32);
         public static IEnumerable<char> EncodeBase64(this IEnumerable<byte> bytes) => bytes.EncodeBase(Base64);
+        public static IEnumerable<string> EncodeBase256(this IEnumerable<byte> bytes) => bytes.EncodeBase(16, b => b.ToString("x"));
 
         public static string DecodeBase2 (this string s, Encoding encoding, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base2 , encoding, aliases, separators);
         public static string DecodeBase4 (this string s, Encoding encoding, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base4 , encoding, aliases, separators);
