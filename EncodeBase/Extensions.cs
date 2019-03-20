@@ -58,10 +58,27 @@
             return m - 1;
         }
 
-        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, KeyValuePairs aliases = null, string separators = null)
+
+        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, int encodingBits, Func<char, int> decoder, string separators = null)
         {
             var level = 0;
             uint work = 0;
+
+            foreach (var c in chars.Where(c => (separators?.IndexOf(c) ?? -1) < 0))
+            {
+                var b5 = decoder(c);
+                work = (uint)((work << encodingBits) | b5);
+                level += encodingBits;
+                while (level >= 8)
+                {
+                    var b = (byte)((work >> (level - 8)) & 0xff);
+                    level -= 8;
+                    yield return b;
+                }
+            }
+        }
+        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, KeyValuePairs aliases = null, string separators = null)
+        {
             var encodingBits = CheckCodeString(code);
             var dic = code.Select((c, i) => new {c, b = (byte)i})
                           .ToDictionary(p => p.c, p => p.b);
@@ -71,18 +88,7 @@
                     foreach (var alias in kvp.Value)
                         dic.Add(alias, dic[kvp.Key]);
 
-            foreach (var c in chars.Where(c => (separators?.IndexOf(c) ?? -1) < 0))
-            {
-                var b5 = dic[c];
-                work = (work << encodingBits) | b5;
-                level += encodingBits;
-                while (level >= 8)
-                {
-                    var b = (byte)((work >> (level - 8)) & 0xff);
-                    level -= 8;
-                    yield return b;
-                }
-            }
+            return chars.DecodeBase(encodingBits, b => dic[b], separators);
         }
 
         public static string EncodeBase(this string s, Encoding encoding, string code)
