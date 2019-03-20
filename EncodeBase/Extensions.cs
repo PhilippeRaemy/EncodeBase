@@ -78,6 +78,25 @@
             }
         }
 
+        static IEnumerable<string> GroupBy(this IEnumerable<char> chars, int length)
+        {
+            var s = string.Empty;
+            foreach (var c in chars)
+            {
+                s += c;
+                if (s.Length < length) continue;
+                yield return s;
+                s = string.Empty;
+            }
+            if (s.Length > 0) 
+                yield return s;
+        }
+
+        public static IEnumerable<byte> DecodeBase(this string s, int codeLength, int encodingBits, Func<string, int> decoder, string separators = null) 
+            => s.Where(c => (separators?.IndexOf(c.ToString()) ?? -1) < 0)
+                .GroupBy(codeLength)
+                .DecodeBase(encodingBits, decoder);
+
         public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, KeyValuePairs aliases = null, string separators = null)
         {
             var encodingBits = CheckCodeString(code);
@@ -129,6 +148,7 @@
         public static IEnumerable<byte> DecodeBase16(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
         public static IEnumerable<byte> DecodeBase32(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
         public static IEnumerable<byte> DecodeBase64(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base64, aliases, separators);
+        public static IEnumerable<byte> DecodeBase256(this string s, string separators = null) => s.DecodeBase(16, 2, h => Convert.ToByte(h, 16), separators);
 
         public static IEnumerable<byte> DecodeBase2 (this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base2 , aliases, separators);
         public static IEnumerable<byte> DecodeBase4 (this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base4 , aliases, separators);
@@ -136,6 +156,6 @@
         public static IEnumerable<byte> DecodeBase16(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
         public static IEnumerable<byte> DecodeBase32(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
         public static IEnumerable<byte> DecodeBase64(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base64, aliases, separators);
-        public static IEnumerable<byte> DecodeBase256(this IEnumerable<string> s) => s.DecodeBase(16, h => Convert.ToByte(h, 16));
+        public static IEnumerable<byte> DecodeBase256(this IEnumerable<string> s, string separators = null) => s.DecodeBase(16, h => Convert.ToByte(h, 16), separators);
     }
 }
