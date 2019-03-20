@@ -126,6 +126,12 @@
         public static string EncodeBase16(this string s, Encoding encoding) => s.EncodeBase(encoding, Base16);
         public static string EncodeBase32(this string s, Encoding encoding) => s.EncodeBase(encoding, Base32);
         public static string EncodeBase64(this string s, Encoding encoding) => s.EncodeBase(encoding, Base64);
+        public static string EncodeBaseHex(this string s, Encoding encoding)
+        {
+            var sb = new StringBuilder();
+            foreach(var e in encoding.GetBytes(s).EncodeBase(8, b => b.ToString("x"))) sb.Append(e);
+            return sb.ToString();
+        }
 
         public static IEnumerable<char> EncodeBase2 (this IEnumerable<byte> bytes) => bytes.EncodeBase(Base2 );
         public static IEnumerable<char> EncodeBase4 (this IEnumerable<byte> bytes) => bytes.EncodeBase(Base4 );
@@ -148,7 +154,7 @@
         public static IEnumerable<byte> DecodeBase16(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
         public static IEnumerable<byte> DecodeBase32(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
         public static IEnumerable<byte> DecodeBase64(this string s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base64, aliases, separators);
-        public static IEnumerable<byte> DecodeBaseHex(this string s, string separators = null) => s.DecodeBase(8, 2, h => Convert.ToByte(h, 16), separators);
+        public static IEnumerable<byte> DecodeBaseHex(this string s, string separators = null) => s.DecodeBase(2, 8, h => Convert.ToByte(h, 16), separators);
 
         public static IEnumerable<byte> DecodeBase2 (this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base2 , aliases, separators);
         public static IEnumerable<byte> DecodeBase4 (this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base4 , aliases, separators);
