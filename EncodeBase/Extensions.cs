@@ -59,12 +59,12 @@
         }
 
 
-        public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, int encodingBits, Func<char, int> decoder, string separators = null)
+        public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> chars, int encodingBits, Func<T, int> decoder, string separators = null)
         {
             var level = 0;
             uint work = 0;
 
-            foreach (var c in chars.Where(c => (separators?.IndexOf(c) ?? -1) < 0))
+            foreach (var c in chars.Where(c => (separators?.IndexOf(c.ToString()) ?? -1) < 0))
             {
                 var b5 = decoder(c);
                 work = (uint)((work << encodingBits) | b5);
@@ -136,5 +136,6 @@
         public static IEnumerable<byte> DecodeBase16(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
         public static IEnumerable<byte> DecodeBase32(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
         public static IEnumerable<byte> DecodeBase64(this IEnumerable<char>s, KeyValuePairs aliases = null, string separators = null) => s.DecodeBase(Base64, aliases, separators);
+        public static IEnumerable<byte> DecodeBase256(this IEnumerable<string> s) => s.DecodeBase(16, h => Convert.ToByte(h, 16));
     }
 }
