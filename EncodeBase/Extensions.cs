@@ -27,11 +27,13 @@
             return bits;
         }
 
-        public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code)
+        public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code) => 
+            bytes.EncodeBase(CheckCodeString(code), i => code[i]);
+
+        public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, int encodingBits, Func<int, char> coder)
         {
             var level = 0;
             uint work = 0;
-            var encodingBits = CheckCodeString(code);
 
             var mask = GetMask(encodingBits);
 
@@ -41,12 +43,12 @@
                 level += 8;
                 while (level >= encodingBits)
                 {
-                    yield return code[(int)((work >> (level - encodingBits)) & mask)];
+                    yield return coder((int)((work >> (level - encodingBits)) & mask));
                     level -= encodingBits;
                 }
             }
             if (level > 0)
-                yield return code[(int)((work << (encodingBits - level)) & mask)];
+                yield return coder((int)((work << (encodingBits - level)) & mask));
         }
 
         public static int GetMask(int encodingBits)
