@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using EncodeBase;
     using MoreLinq.Extensions;
     using Xunit;
@@ -29,11 +30,20 @@
         }
 
         [Fact]
-        public void Separators()
+        public void Separators32()
         {
             const string separators = "-";
             var separated = Base32.Batch(5).Select(b => new string(b.ToArray())).ToDelimitedString(separators);
             Assert.Equal(Base32.DecodeBase32(), separated.DecodeBase32(separators: separators));
+        }
+
+        [Fact]
+        public void SeparatorsHex()
+        {
+            const string separators = "-";
+            var encoded = "Hello World".EncodeBaseHex(Encoding.Default);
+            var separated = encoded.Batch(5).Select(b => new string(b.ToArray())).ToDelimitedString(separators);
+            Assert.Equal(encoded.DecodeBaseHex(), separated.DecodeBaseHex(separators));
         }
     }
 }
