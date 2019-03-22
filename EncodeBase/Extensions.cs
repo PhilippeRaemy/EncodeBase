@@ -225,6 +225,7 @@
         public static string DecodeBase4 (this string s, Encoding encoding, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base4 , encoding, aliases, separators);
         public static string DecodeBase8 (this string s, Encoding encoding, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base8 , encoding, aliases, separators);
         public static string DecodeBase16(this string s, Encoding encoding, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base16, encoding, aliases, separators);
+        public static string DecodeBase32(this string s, Encoding encoding) => s.DecodeBase(Base32, encoding, Base32CanonicalAliases, CanonicalSeparators);
         public static string DecodeBase32(this string s, Encoding encoding, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base32, encoding, aliases, separators);
         public static string DecodeBase64(this string s, Encoding encoding, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base64, encoding, aliases, separators);
 
