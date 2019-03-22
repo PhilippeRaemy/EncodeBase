@@ -14,7 +14,7 @@
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public static int CheckCodeString(string code)
+        public static ushort CheckCodeString(string code)
         {
             if (code == null) throw new ArgumentNullException(nameof(code));
             if (code.Length < 2)
@@ -23,7 +23,7 @@
             if (code.Any(c => code.Count(co => co == c) > 1))
                 throw new InvalidOperationException("Please use a coding string with all distinct characters");
             var len = 2;
-            var bits = 1;
+            ushort bits = 1;
             while (len < code.Length)
             {
                 len *= 2;
@@ -75,11 +75,11 @@
         /// </summary>
         /// <param name="encodingBits"></param>
         /// <returns></returns>
-        public static int GetMask(int encodingBits)
+        public static ushort GetMask(int encodingBits)
         {
-            var m = 1;
+            ushort m = 1;
             while (encodingBits-- > 0) m *= 2;
-            return m - 1;
+            return (ushort)(m - 1);
         }
 
         /// <summary>
