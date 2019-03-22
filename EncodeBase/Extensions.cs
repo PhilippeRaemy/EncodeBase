@@ -208,7 +208,7 @@
         public static string EncodeBase64(this string s, Encoding encoding) => s.EncodeBase(encoding, Base64);
         public static string EncodeBaseHex(this string s, Encoding encoding)
         {
-            var sb = new StringBuilder();
+            var sb = new StringBuilder(2 * encoding.GetMaxByteCount(s.Length)) ;
             foreach(var e in encoding.GetBytes(s).EncodeBase(8, b => b.ToString("x"))) sb.Append(e);
             return sb.ToString();
         }
