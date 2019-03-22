@@ -5,10 +5,17 @@
     using System.Linq;
     using System.Text;
     using static CodingStrings;
+    /* TODO: rename to charStringPairs */
     using KeyValuePairs = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<char, string>>;
 
+    /* TODO: use uint instead of int wherever possible */
     public static class Extensions
     {
+        /// <summary>
+        /// Check if a code string is acceptable for encoding and returns the useable code length.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static int CheckCodeString(string code)
         {
             if (code == null) throw new ArgumentNullException(nameof(code));
@@ -27,9 +34,23 @@
             return bits;
         }
 
+        /// <summary>
+        /// Encode an enumeration of bytes
+        /// </summary>
+        /// <param name="bytes">Enumeration</param>
+        /// <param name="code">Code string</param>
+        /// <returns></returns>
         public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code) => 
             bytes.EncodeBase(CheckCodeString(code), i => code[i]);
 
+        /// <summary>
+        /// Encode an enumeration of bytes
+        /// </summary>
+        /// <typeparam name="T">The target encoding type. Usually char or string.</typeparam>
+        /// <param name="bytes">Enumeration</param>
+        /// <param name="encodingBits">The number of bits used for encoding</param>
+        /// <param name="coder">The encoding function</param>
+        /// <returns></returns>
         public static IEnumerable<T> EncodeBase<T>(this IEnumerable<byte> bytes, int encodingBits, Func<int, T> coder)
         {
             var level = 0;
@@ -51,6 +72,11 @@
                 yield return coder((int)((work << (encodingBits - level)) & mask));
         }
 
+        /// <summary>
+        /// Returns the binary mask used to extract bits from the source.
+        /// </summary>
+        /// <param name="encodingBits"></param>
+        /// <returns></returns>
         public static int GetMask(int encodingBits)
         {
             var m = 1;
@@ -58,7 +84,17 @@
             return m - 1;
         }
 
-
+        /// <summary>
+        /// Decode an enumeration of T objects into an enumeration of bytes
+        /// </summary>
+        /// <typeparam name="T">The source encoding type. Usually char or string.</typeparam>
+        /// <param name="chars"></param>
+        /// <param name="encodingBits">The number of bits used for encoding</param>
+        /// <param name="decoder">Decoding function</param>
+        /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
+        /// <returns></returns>
+        /* TODO: separators must be IEnumerable<T> */
+        /* TODO: Rename chars */
         public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> chars, int encodingBits, Func<T, int> decoder, string separators = null)
         {
             var level = 0;
@@ -78,6 +114,12 @@
             }
         }
 
+        /// <summary>
+        /// Group strings in chunks of applicable encoding length
+        /// </summary>
+        /// <param name="chars">Enumeration</param>
+        /// <param name="length">Chunk length</param>
+        /// <returns></returns>
         static IEnumerable<string> GroupBy(this IEnumerable<char> chars, int length)
         {
             var s = string.Empty;
@@ -92,11 +134,28 @@
                 yield return s;
         }
 
+        /// <summary>
+        /// Decode a string using a decoder function
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="codeLength">The coded length (in chars) of each bit chunk</param>
+        /// <param name="encodingBits">The number of bits used for encoding</param>
+        /// <param name="decoder">The decoder function</param>
+        /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
+        /// <returns></returns>
         public static IEnumerable<byte> DecodeBase(this string s, int codeLength, int encodingBits, Func<string, int> decoder, string separators = null) 
             => s.Where(c => (separators?.IndexOf(c.ToString()) ?? -1) < 0)
                 .GroupBy(codeLength)
                 .DecodeBase(encodingBits, decoder);
 
+        /// <summary>
+        /// Decode a string using a coding string
+        /// /// </summary>
+        /// <param name="chars"></param>
+        /// <param name="code"></param>
+        /// <param name="aliases">An enumeration of aliases provided as key-value pairs. Each character given as a char key can be aliased by any character in the value string.</param>
+        /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
+        /// <returns></returns>
         public static IEnumerable<byte> DecodeBase(this IEnumerable<char> chars, string code, KeyValuePairs aliases = null, string separators = null)
         {
             var encodingBits = CheckCodeString(code);
@@ -111,12 +170,36 @@
             return chars.DecodeBase(encodingBits, b => dic[b], separators);
         }
 
+        /// <summary>
+        /// Encode a string using a specific character encoding.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="encoding"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static string EncodeBase(this string s, Encoding encoding, string code)
             => new string(encoding.GetBytes(s).EncodeBase(code).ToArray());
 
+        /// <summary>
+        /// Decode a string into a string using a specific character encoding.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="code"></param>
+        /// <param name="encoding"></param>
+        /// <param name="aliases">An enumeration of aliases provided as key-value pairs. Each character given as a char key can be aliased by any character in the value string.</param>
+        /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
+        /// <returns></returns>
         public static string DecodeBase(this string s, string code, Encoding encoding, KeyValuePairs aliases = null, string separators = null)
             => encoding.GetString(s.DecodeBase(code, aliases, separators).ToArray());
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="code"></param>
+        /// <param name="aliases">An enumeration of aliases provided as key-value pairs. Each character given as a char key can be aliased by any character in the value string.</param>
+        /// <param name="separators"></param>
+        /// <returns></returns>
         public static IEnumerable<byte> DecodeBase(this string s, string code, KeyValuePairs aliases = null, string separators = null)
             => s.ToCharArray().DecodeBase(code, aliases, separators);
 
