@@ -86,19 +86,18 @@
         /// Decode an enumeration of T objects into an enumeration of bytes
         /// </summary>
         /// <typeparam name="T">The source encoding type. Usually char or string.</typeparam>
-        /// <param name="chars"></param>
+        /// <param name="coded"></param>
         /// <param name="encodingBits">The number of bits used for encoding</param>
         /// <param name="decoder">Decoding function</param>
         /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
         /// <returns></returns>
-        /* TODO: separators must be IEnumerable<T> */
-        /* TODO: Rename chars */
-        public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> chars, int encodingBits, Func<T, int> decoder, string separators = null)
+        public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> coded, int encodingBits, Func<T, int> decoder, IEnumerable<T> separators = null)
         {
             var level = 0;
             uint work = 0;
+            separators = separators ?? Enumerable.Empty<T>();
 
-            foreach (var c in chars.Where(c => (separators?.IndexOf(c.ToString()) ?? -1) < 0))
+            foreach (var c in coded.Where(c => !separators.Any(s => s.Equals(c))))
             {
                 var b5 = decoder(c);
                 work = (uint)((work << encodingBits) | b5);
@@ -243,6 +242,6 @@
         public static IEnumerable<byte> DecodeBase16(this IEnumerable<char>s, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base16, aliases, separators);
         public static IEnumerable<byte> DecodeBase32(this IEnumerable<char>s, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base32, aliases, separators);
         public static IEnumerable<byte> DecodeBase64(this IEnumerable<char>s, CharStringPairs aliases = null, string separators = null) => s.DecodeBase(Base64, aliases, separators);
-        public static IEnumerable<byte> DecodeBaseHex(this IEnumerable<string> s, string separators = null) => s.DecodeBase(8, h => Convert.ToByte(h, 16), separators);
+        public static IEnumerable<byte> DecodeBaseHex(this IEnumerable<string> s, IEnumerable<string> separators = null) => s.DecodeBase(8, h => Convert.ToByte(h, 16), separators);
     }
 }
