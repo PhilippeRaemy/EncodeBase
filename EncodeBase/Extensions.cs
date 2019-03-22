@@ -39,7 +39,7 @@
         /// <param name="code">Code string</param>
         /// <returns></returns>
         public static IEnumerable<char> EncodeBase(this IEnumerable<byte> bytes, string code) => 
-            bytes.EncodeBase(CheckCodeString(code), i => code[i]);
+            bytes.EncodeBase(CheckCodeString(code), i => code[(int)i]);
 
         /// <summary>
         /// Encode an enumeration of bytes
@@ -49,7 +49,7 @@
         /// <param name="encodingBits">The number of bits used for encoding</param>
         /// <param name="coder">The encoding function</param>
         /// <returns></returns>
-        public static IEnumerable<T> EncodeBase<T>(this IEnumerable<byte> bytes, int encodingBits, Func<int, T> coder)
+        public static IEnumerable<T> EncodeBase<T>(this IEnumerable<byte> bytes, ushort encodingBits, Func<uint, T> coder)
         {
             var level = 0;
             uint work = 0;
@@ -62,12 +62,12 @@
                 level += 8;
                 while (level >= encodingBits)
                 {
-                    yield return coder((int)((work >> (level - encodingBits)) & mask));
+                    yield return coder((work >> (level - encodingBits)) & mask);
                     level -= encodingBits;
                 }
             }
             if (level > 0)
-                yield return coder((int)((work << (encodingBits - level)) & mask));
+                yield return coder(work << (encodingBits - level) & mask);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@
         /// </summary>
         /// <param name="encodingBits"></param>
         /// <returns></returns>
-        public static ushort GetMask(int encodingBits)
+        public static ushort GetMask(ushort encodingBits)
         {
             ushort m = 1;
             while (encodingBits-- > 0) m *= 2;
@@ -91,7 +91,7 @@
         /// <param name="decoder">Decoding function</param>
         /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
         /// <returns></returns>
-        public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> coded, int encodingBits, Func<T, int> decoder, IEnumerable<T> separators = null)
+        public static IEnumerable<byte> DecodeBase<T>(this IEnumerable<T> coded, int encodingBits, Func<T, uint> decoder, IEnumerable<T> separators = null)
         {
             var level = 0;
             uint work = 0;
@@ -100,7 +100,7 @@
             foreach (var c in coded.Where(c => !separators.Any(s => s.Equals(c))))
             {
                 var b5 = decoder(c);
-                work = (uint)((work << encodingBits) | b5);
+                work = (work << encodingBits) | b5;
                 level += encodingBits;
                 while (level >= 8)
                 {
@@ -140,7 +140,7 @@
         /// <param name="decoder">The decoder function</param>
         /// <param name="separators">Acceptable separators in the coded string which must be ignored while decoding. Considered as a char[].</param>
         /// <returns></returns>
-        public static IEnumerable<byte> DecodeBase(this string s, int codeLength, int encodingBits, Func<string, int> decoder, string separators = null) 
+        public static IEnumerable<byte> DecodeBase(this string s, int codeLength, ushort encodingBits, Func<string, uint> decoder, string separators = null) 
             => s.Where(c => (separators?.IndexOf(c.ToString()) ?? -1) < 0)
                 .GroupBy(codeLength)
                 .DecodeBase(encodingBits, decoder);

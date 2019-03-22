@@ -19,7 +19,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(Masks))]
-        public void GetMask(int encodingBits, int expectedMask)
+        public void GetMask(ushort encodingBits, ushort expectedMask)
         {
             Assert.Equal(expectedMask, EncodeBase.Extensions.GetMask(encodingBits));
         }
