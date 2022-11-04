@@ -1,7 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>NET40;NET45;NET451;NET452;NET46;NET461;NET462;NET47;NET471;NET472;</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Authors>Philippe Raemy</Authors>
+    <Copyright>Copyright (c) 2019 Philippe Raemy</Copyright>
+    <PackageLicenseUrl>https://github.com/PhilippeRaemy/EncodeBase/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PhilippeRaemy/EncodeBase</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <Description>Library to encode/decode byte enumerations in base 2, 4, 8, 16, 32, ...</Description>
   </PropertyGroup>
 
 </Project>
